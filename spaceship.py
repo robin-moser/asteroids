@@ -1,6 +1,8 @@
 import pygame
 from math import *
 
+import bullet
+
 
 class Spaceship:
 
@@ -13,11 +15,22 @@ class Spaceship:
 		self.angle = 180.0
 		self.real_points = []
 
+		self.bullets = []
+
 		self.rel_points = [[0, 20], [-140, 20], [180, 7.5], [140, 20]]
 		scale = 0.6
 		for i in range(len(self.rel_points)):
 			self.rel_points[i] = (radians(self.rel_points[i][0]), scale*self.rel_points[i][1])
-		
+
+	def shoot(self):
+
+		angle_rad = radians(-self.angle + 90)
+		pos = [
+			self.position[0] + 7.5 * cos(angle_rad),
+			self.position[1] + 7.5 * sin(angle_rad)
+		]
+		self.bullets.append(bullet.Bullet(pos, angle_rad))
+
 	def update(self, dt, screen_size):
 
 		self.position[0] += self.velocity[0] * dt
@@ -47,7 +60,15 @@ class Spaceship:
 				self.position[1] + yp
 			))
 
+		for b in self.bullets:
+			b.update(dt)
+			if b.time > 5.0:
+				self.bullets.remove(b)
+				continue
+
 	def draw(self, surface):
+		for b in self.bullets:
+			b.draw(surface)
 
 		color = (255, 255, 255)
 		pygame.draw.aalines(surface, color, True, self.real_points)

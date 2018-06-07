@@ -7,6 +7,7 @@ import os
 import traceback
 
 import spaceship
+import bullet
 
 # Init screen
 screen_size = [640, 480]
@@ -48,6 +49,9 @@ def get_input(dt):
 	if keys_pressed[K_DOWN]:
 		ship.velocity[0] *= 0.99
 		ship.velocity[1] *= 0.99
+
+	if keys_pressed[K_SPACE]:
+		ship.shoot()
 	return True
 
 
@@ -66,7 +70,7 @@ def draw():
 def main():
 	global clock
 
-	target_fps = 20
+	target_fps = 60
 	dt = 1.0/float(target_fps)
 
 	start_game()
