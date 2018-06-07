@@ -23,10 +23,17 @@ def start_game():
 
 def get_input(dt):
 	
+	keys_pressed = pygame.key.get_pressed()
 	for event in pygame.event.get():
 		if   event.type == QUIT: return False
 		elif event.type == KEYDOWN:
 			if   event.key == K_ESCAPE: return False
+
+	if keys_pressed[K_LEFT]:
+		spaceship.angle += 3.0
+	
+	if keys_pressed[K_RIGHT]:
+		spaceship.angle -= 3.0
 
 	return True
 
