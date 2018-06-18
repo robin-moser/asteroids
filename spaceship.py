@@ -13,9 +13,11 @@ class Spaceship:
 		self.position = list(position)
 		self.velocity = [1.0, 0.0]
 		self.angle = 180.0
+		self.fire_timeout = 8
 		self.real_points = []
 
 		self.bullets = []
+		self.fire = 0
 
 		self.rel_points = [[0, 20], [-140, 20], [180, 7.5], [140, 20]]
 		scale = 0.6
@@ -23,13 +25,14 @@ class Spaceship:
 			self.rel_points[i] = (radians(self.rel_points[i][0]), scale*self.rel_points[i][1])
 
 	def shoot(self):
-
-		angle_rad = radians(-self.angle + 90)
-		pos = [
-			self.position[0] + 7.5 * cos(angle_rad),
-			self.position[1] + 7.5 * sin(angle_rad)
-		]
-		self.bullets.append(bullet.Bullet(pos, angle_rad))
+		if self.fire == 0:
+			angle_rad = radians(-self.angle + 90)
+			pos = [
+				self.position[0] + 7.5 * cos(angle_rad),
+				self.position[1] + 7.5 * sin(angle_rad)
+			]
+			self.bullets.append(bullet.Bullet(pos, angle_rad))
+			self.fire = self.fire_timeout
 
 	def update(self, dt, screen_size):
 
@@ -49,6 +52,8 @@ class Spaceship:
 			self.position[1] = screen_size[1]
 			self.velocity[1] *= -0.5
 
+		if self.fire > 0:
+			self.fire -= 1
 		self.real_points = []
 
 		for point_angle, point_radius in self.rel_points:
