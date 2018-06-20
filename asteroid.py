@@ -22,7 +22,17 @@ class Asteroid:
 			Asteroid.speed * random.uniform(-2.0, 2.0)
 		]
 
-		self.rel_points = [[0, 1], [45, 1], [90, 1], [135, 1], [180, 1], [225, 1], [270, 1], [315, 1]]
+		self.rel_points = [
+		[0, random.uniform(1.0, 1.5)],
+		[45, random.uniform(1.0, 1.5)],
+		[90, random.uniform(1.0, 1.5)],
+		[135, random.uniform(1.0, 1.5)],
+		[180, random.uniform(1.0, 1.5)],
+		[225, random.uniform(1.0, 1.5)],
+		[270, random.uniform(1.0, 1.5)],
+		[315, random.uniform(1.0, 1.5)]
+		]
+
 		for i in range(len(self.rel_points)):
 			self.rel_points[i] = (radians(self.rel_points[i][0]), self.scale * self.rel_points[i][1])
 
