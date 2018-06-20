@@ -10,6 +10,8 @@ class Spaceship:
 
 	def __init__(self, position):
 
+		self.score = 0
+
 		self.position = list(position)
 		self.velocity = [1.0, 0.0]
 		self.angle = 180.0
@@ -40,9 +42,11 @@ class Spaceship:
 				if (abs(round(asteroid.position[0]) - round(bullet.position[0]))) <= asteroid.scale * asteroid.radius and\
 				   (abs(round(asteroid.position[1]) - round(bullet.position[1]))) <= asteroid.scale * asteroid.radius:
 					asteroid.hit()
+					self.score += 10
 
 					if asteroid.health == 0:
 						asteroids.remove(asteroid)
+						self.score += 50
 					if bullet in self.bullets:
 						self.bullets.remove(bullet)
 

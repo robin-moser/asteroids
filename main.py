@@ -11,11 +11,18 @@ import asteroid
 screen_size = [640, 480]
 
 pygame.display.init()
+pygame.font.init()
+
 pygame.display.set_caption("Asteroids")
 icon = pygame.Surface((1, 1))
 icon.set_alpha(0)
 pygame.display.set_icon(icon)
 surface = pygame.display.set_mode(screen_size)
+
+fonts = {
+    16 : pygame.font.SysFont("Monosans",20,False),
+    32 : pygame.font.SysFont("Monosans",32,False)
+}
 
 asteroid_count = 10
 
@@ -85,6 +92,14 @@ def draw():
 
 	for astro in asteroids:
 		astro.draw(surface)
+
+	surf_fps = fonts[16].render("FPS: "+str(round(clock.get_fps(),1)), True, (255,255,255))
+	surface.blit(surf_fps,(screen_size[0]-surf_fps.get_width()-10,screen_size[1]-surf_fps.get_height()-10))
+
+	surf_score = fonts[16].render("Score: "+str(ship.score), True, (255,255,255))
+	surface.blit(surf_score,(screen_size[0]-surf_score.get_width()-10,10))
+
+
 	pygame.display.flip()
 
 
