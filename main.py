@@ -17,7 +17,12 @@ pygame.display.set_caption("Asteroids")
 icon = pygame.Surface((1, 1))
 icon.set_alpha(0)
 pygame.display.set_icon(icon)
-surface = pygame.display.set_mode(screen_size)
+screen = pygame.display.set_mode(screen_size)
+
+surface = screen
+surface = pygame.Surface(screen_size, 0, 32)
+
+surface.fill((0,0,0,255))
 
 fonts = {
     16 : pygame.font.SysFont("Monosans",20,False),
@@ -99,6 +104,7 @@ def draw():
 	surf_score = fonts[16].render("Score: "+str(ship.score), True, (255,255,255))
 	surface.blit(surf_score,(screen_size[0]-surf_score.get_width()-10,10))
 
+	screen.blit(surface, (0,0))
 
 	pygame.display.flip()
 

@@ -91,5 +91,5 @@ class Spaceship:
 		for b in self.bullets:
 			b.draw(surface)
 
-		color = (255, 255, 255)
+		color = (255, 255, 0)
 		pygame.draw.aalines(surface, color, True, self.real_points)

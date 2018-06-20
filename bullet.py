@@ -1,3 +1,4 @@
+import pygame
 from helpers import *
 
 class Bullet(object):
@@ -20,8 +21,5 @@ class Bullet(object):
 
 	def draw(self, surface):
 		x, y = rndint(self.position[0]), rndint(self.position[1])
-		surface.set_at((x, y), (255, 0, 0))
-		surface.set_at((x - 1, y), (255, 0, 0))
-		surface.set_at((x + 1, y), (255, 0, 0))
-		surface.set_at((x, y - 1), (255, 0, 0))
-		surface.set_at((x, y + 1), (255, 0, 0))
+		color = (255, 0, 0)
+		pygame.draw.circle(surface, color, (x, y), 2)
