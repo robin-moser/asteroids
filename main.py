@@ -2,12 +2,10 @@ import pygame
 from pygame.locals import *
 from math import *
 import random
-import sys
-import os
 import traceback
 
 import spaceship
-import bullet
+import asteroid
 
 # Init screen
 screen_size = [640, 480]
@@ -22,8 +20,19 @@ surface = pygame.display.set_mode(screen_size)
 
 def start_game():
 
-	global ship
+	global ship, asteroids
 	ship = spaceship.Spaceship([screen_size[0]/2.0, screen_size[1]/2.0])
+
+	asteroids = []
+	add_asteroid(10)
+
+
+def add_asteroid(n=1):
+	for i in range(n):
+		asteroids.append(asteroid.Asteroid([
+			random.randint(0, screen_size[0]),
+			random.randint(0, screen_size[1])
+		]))
 
 
 def get_input(dt):
@@ -58,12 +67,19 @@ def get_input(dt):
 def update(dt):
 
 	ship.update(dt, screen_size)
+
+	for obj in asteroids:
+		obj.update(dt, screen_size)
+		
 	return True
 
 
 def draw():
 	surface.fill((0, 0, 0))
 	ship.draw(surface)
+
+	for astro in asteroids:
+		astro.draw(surface)
 	pygame.display.flip()
 
 
