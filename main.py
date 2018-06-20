@@ -17,6 +17,7 @@ icon.set_alpha(0)
 pygame.display.set_icon(icon)
 surface = pygame.display.set_mode(screen_size)
 
+asteroid_count = 10
 
 def start_game():
 
@@ -24,7 +25,7 @@ def start_game():
 	ship = spaceship.Spaceship([screen_size[0]/2.0, screen_size[1]/2.0])
 
 	asteroids = []
-	add_asteroid(10)
+	add_asteroid(asteroid_count)
 
 
 def add_asteroid(n=1):
@@ -67,6 +68,10 @@ def get_input(dt):
 def update(dt):
 
 	ship.update(dt, screen_size)
+	ship.collide_bullets(asteroids, dt)
+
+	if len(asteroids) < asteroid_count:
+		add_asteroid(1)
 
 	for obj in asteroids:
 		obj.update(dt, screen_size)

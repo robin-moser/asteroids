@@ -34,6 +34,18 @@ class Spaceship:
 			self.bullets.append(bullet.Bullet(pos, angle_rad))
 			self.fire = self.fire_timeout
 
+	def collide_bullets(self, asteroids, dt):
+		for bullet in self.bullets:
+			for asteroid in asteroids:
+				if (abs(round(asteroid.position[0]) - round(bullet.position[0]))) <= asteroid.scale * asteroid.radius and\
+				   (abs(round(asteroid.position[1]) - round(bullet.position[1]))) <= asteroid.scale * asteroid.radius:
+					asteroid.hit()
+
+					if asteroid.health == 0:
+						asteroids.remove(asteroid)
+					if bullet in self.bullets:
+						self.bullets.remove(bullet)
+
 	def update(self, dt, screen_size):
 
 		self.position[0] += self.velocity[0] * dt
