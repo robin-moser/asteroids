@@ -81,6 +81,7 @@ def update(dt):
 
 	ship.update(dt, screen_size)
 	ship.collide_bullets(asteroids, dt)
+	ship.collide_asteroids(asteroids)
 
 	if len(asteroids) < asteroid_count:
 		add_asteroid(1)

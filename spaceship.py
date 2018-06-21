@@ -50,6 +50,19 @@ class Spaceship:
 					if bullet in self.bullets:
 						self.bullets.remove(bullet)
 
+	@staticmethod
+	def collide_asteroids(asteroids):
+		for idx1, asteroid1 in enumerate(asteroids):
+			for idx2, asteroid2 in enumerate(asteroids):
+
+				if (idx1 != idx2) and\
+					(abs(asteroid1.position[0] - asteroid2.position[0])) \
+					<= asteroid1.scale * asteroid1.radius + asteroid2.scale * asteroid2.radius and \
+					(abs(asteroid1.position[1] - asteroid2.position[1])) \
+					<= asteroid1.scale * asteroid1.radius + asteroid2.scale * asteroid2.radius:
+
+					asteroid1.collide_timeout(idx2)
+					asteroid2.collide_timeout(idx1)
 	def update(self, dt, screen_size):
 
 		self.position[0] += self.velocity[0] * dt
