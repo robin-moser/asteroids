@@ -11,6 +11,9 @@ class Spaceship:
 	def __init__(self, position):
 
 		self.score = 0
+		self.lives = 3
+		self.alife = True
+		self.dying = 0
 
 		self.position = list(position)
 		self.velocity = [1.0, 0.0]
@@ -18,6 +21,7 @@ class Spaceship:
 		self.fire_timeout = 8
 		self.real_points = []
 
+		self.color = (255, 255, 0)
 		self.bullets = []
 		self.fire = 0
 
@@ -63,6 +67,19 @@ class Spaceship:
 
 					asteroid1.collide_timeout(idx2)
 					asteroid2.collide_timeout(idx1)
+
+	def collide_ship(self, screen_size, asteroids):
+		if self.dying <= 0:
+			for asteroid in asteroids:
+				if (abs(round(asteroid.position[0]) - round(self.position[0]))) <= asteroid.scale * asteroid.radius and \
+					(abs(round(asteroid.position[1]) - round(self.position[1]))) <= asteroid.scale * asteroid.radius:
+					self.lives -= 1
+					self.position = ([screen_size[0] / 2.0, screen_size[1] / 2.0])
+					self.velocity = [0.0, 0.0]
+
+					self.alife = False
+					self.dying = 1
+
 	def update(self, dt, screen_size):
 
 		self.position[0] += self.velocity[0] * dt
@@ -80,6 +97,11 @@ class Spaceship:
 		elif self.position[1] > screen_size[1]:
 			self.position[1] = screen_size[1]
 			self.velocity[1] *= -0.5
+
+		if not self.alife and self.lives > 0:
+			self.dying -= dt
+			if self.dying <= 0:
+				self.alife = True
 
 		if self.fire > 0:
 			self.fire -= 1
@@ -104,5 +126,5 @@ class Spaceship:
 		for b in self.bullets:
 			b.draw(surface)
 
-		color = (255, 255, 0)
-		pygame.draw.aalines(surface, color, True, self.real_points)
+		if self.alife:
+			pygame.draw.aalines(surface, self.color, True, self.real_points)

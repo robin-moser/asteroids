@@ -9,7 +9,7 @@ class Asteroid:
 
 	def __init__(self, position):
 
-		self.health = 4
+		self.health = 5
 		self.radius = 20
 
 		self.timeout = 0
