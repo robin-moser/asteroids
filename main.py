@@ -46,9 +46,16 @@ def start_game():
 
 def add_asteroid(n=1):
 	for i in range(n):
+
+		pos1 = random.randint(0, screen_size[0])
+		pos2 = random.randint(0, screen_size[1])
+		while abs(pos1 - ship.position[0]) < 200 and abs(pos2 - ship.position[0]) < 200:
+			pos1 = random.randint(0, screen_size[0])
+			pos2 = random.randint(0, screen_size[1])
+
 		asteroids.append(asteroid.Asteroid([
-			random.randint(0, screen_size[0]),
-			random.randint(0, screen_size[1])
+			pos1,
+			pos2
 		]))
 
 def get_input(dt):
