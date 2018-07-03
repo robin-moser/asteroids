@@ -1,6 +1,7 @@
 import pygame
 from math import *
 
+import random
 import bullet
 
 
@@ -12,18 +13,23 @@ class Spaceship:
 
 		self.score = 0
 		self.lives = 3
-		self.alife = True
+		self.alive = True
 		self.dying = 0
 
 		self.position = list(position)
 		self.velocity = [1.0, 0.0]
 		self.angle = 180.0
-		self.fire_timeout = 8
+		
+		self.fire_timeout = 4
+		self.reload_timeout = 50
+		self.reload_amount = 50
+
 		self.real_points = []
 
 		self.color = (255, 255, 0)
 		self.bullets = []
-		self.fire = 0
+		self.fire_to = 0
+		self.fire_rl = self.reload_amount
 
 		self.rel_points = [[0, 20], [-140, 20], [180, 7.5], [140, 20]]
 		scale = 0.6
@@ -31,14 +37,17 @@ class Spaceship:
 			self.rel_points[i] = (radians(self.rel_points[i][0]), scale*self.rel_points[i][1])
 
 	def shoot(self):
-		if self.fire == 0:
-			angle_rad = radians(-self.angle + 90)
+		if self.fire_to <= 0 and self.fire_rl > 0:
+
+			accuracy = (abs(self.velocity[0]) + abs(self.velocity[1])) / 50
+			angle_rad = radians(-self.angle + random.uniform(90-accuracy,90+accuracy))
 			pos = [
 				self.position[0] + 7.5 * cos(angle_rad),
 				self.position[1] + 7.5 * sin(angle_rad)
 			]
 			self.bullets.append(bullet.Bullet(pos, angle_rad))
-			self.fire = self.fire_timeout
+			self.fire_to = self.fire_timeout
+			self.fire_rl -= 1
 
 	def collide_bullets(self, asteroids, dt):
 		for bullet in self.bullets:
@@ -77,7 +86,7 @@ class Spaceship:
 					self.position = ([screen_size[0] / 2.0, screen_size[1] / 2.0])
 					self.velocity = [0.0, 0.0]
 
-					self.alife = False
+					self.alive = False
 					self.dying = 1
 
 	def update(self, dt, screen_size):
@@ -98,13 +107,19 @@ class Spaceship:
 			self.position[1] = screen_size[1]
 			self.velocity[1] *= -0.5
 
-		if not self.alife and self.lives > 0:
+		if not self.alive and self.lives > 0:
 			self.dying -= dt
 			if self.dying <= 0:
-				self.alife = True
+				self.alive = True
 
-		if self.fire > 0:
-			self.fire -= 1
+		if self.fire_to > 0:
+			self.fire_to -= 1
+
+		if self.fire_rl <= 0:
+			self.fire_rl -= 1
+			if self.fire_rl == -self.reload_timeout:
+				self.fire_rl = self.reload_amount
+
 		self.real_points = []
 
 		for point_angle, point_radius in self.rel_points:
@@ -126,5 +141,5 @@ class Spaceship:
 		for b in self.bullets:
 			b.draw(surface)
 
-		if self.alife:
+		if self.alive:
 			pygame.draw.aalines(surface, self.color, True, self.real_points)

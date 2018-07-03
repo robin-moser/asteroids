@@ -26,16 +26,21 @@ surface.fill((0, 0, 0, 255))
 
 fonts = {
 	16: pygame.font.SysFont("Monosans", 20, False),
-	32: pygame.font.SysFont("Monosans", 32, False)
+	32: pygame.font.SysFont("Monosans", 32, False),
+	64: pygame.font.SysFont("Monosans", 64, False)
 }
 
 
 def start_game():
-	global ship, asteroids, asteroid_count, remove_timeout
+	global ship, asteroids, asteroid_count, remove_timeout, status, opacity
 	ship = spaceship.Spaceship([screen_size[0] / 2.0, screen_size[1] / 2.0])
 
 	asteroid_count = 10
 	remove_timeout = 1
+	opacity = 0
+
+	status = 0
+	updatestatus(0)
 	asteroids = []
 	add_asteroid(asteroid_count)
 
@@ -46,7 +51,6 @@ def add_asteroid(n=1):
 			random.randint(0, screen_size[1])
 		]))
 
-
 def get_input(dt):
 	keys_pressed = pygame.key.get_pressed()
 	for event in pygame.event.get():
@@ -55,24 +59,36 @@ def get_input(dt):
 		elif event.type == KEYDOWN:
 			if event.key == K_ESCAPE:
 				return False
+	if not status:
+		if keys_pressed[K_LEFT]:
+			ship.angle += 3.5
 
-	if keys_pressed[K_LEFT]:
-		ship.angle += 3.0
+		if keys_pressed[K_RIGHT]:
+			ship.angle -= 3.5
 
-	if keys_pressed[K_RIGHT]:
-		ship.angle -= 3.0
+		if keys_pressed[K_UP]:
+			ship.velocity[0] += dt * spaceship.Spaceship.speed * sin(radians(ship.angle))
+			ship.velocity[1] += dt * spaceship.Spaceship.speed * cos(radians(ship.angle))
 
-	if keys_pressed[K_UP]:
-		ship.velocity[0] += dt * spaceship.Spaceship.speed * sin(radians(ship.angle))
-		ship.velocity[1] += dt * spaceship.Spaceship.speed * cos(radians(ship.angle))
+		if keys_pressed[K_DOWN]:
+			ship.velocity[0] *= 0.99
+			ship.velocity[1] *= 0.99
 
-	if keys_pressed[K_DOWN]:
-		ship.velocity[0] *= 0.99
-		ship.velocity[1] *= 0.99
+		if keys_pressed[K_SPACE]:
+			ship.shoot()
+	elif (status ==	 2):
+		if keys_pressed[K_SPACE]:
+				start_game()
 
-	if keys_pressed[K_SPACE]:
-		ship.shoot()
 	return True
+
+
+def updatestatus(st):
+	global status, opacity
+
+	if (status != st):
+		status = st
+		opacity = 0
 
 
 def update(dt):
@@ -83,55 +99,86 @@ def update(dt):
 	ship.collide_asteroids(asteroids)
 	ship.collide_ship(screen_size, asteroids)
 
-	asteroid_count = round(ship.score / 2000 + 10)
+	asteroid_realcount = round(asteroid_count + ship.score / 2000)
 
-	if len(asteroids) < asteroid_count and ship.lives:
+	if len(asteroids) < asteroid_realcount and ship.lives:
 		add_asteroid(1)
 
 	for obj in asteroids:
 		obj.update(dt, screen_size)
 
 	if ship.lives == 0:
+		if not status:
+			updatestatus(1)
 		if len(asteroids):
 			if remove_timeout > 0:
 				remove_timeout -= dt * 10
 			else:
 				asteroids.remove(asteroids[len(asteroids)-1])
 				remove_timeout = 1
-		# else:
-		#	start_game()
-
+		else:
+			updatestatus(2)
 	return True
 
 
 def draw():
+	global opacity, status
 	surface.fill((0, 0, 0))
-	ship.draw(surface)
-
+	
 	for astro in asteroids:
 		astro.draw(surface)
 
-	surf_fps = fonts[16].render("FPS: " + str(round(clock.get_fps(), 1)), True, (255, 255, 255))
-	surface.blit(surf_fps, (screen_size[0] - surf_fps.get_width() - 10, screen_size[1] - 20))
+	ammo = str("")
+	ammorefill = str("")
 
-	surf_score = fonts[16].render("Score: " + str(ship.score), True, (255, 255, 255))
-	surface.blit(surf_score, (screen_size[0] - surf_score.get_width() - 10, 10))
+	for i in range(ship.fire_rl):
+		ammo += "I"
+		
+	for i in range(-ship.fire_rl):
+		ammorefill += "-"
 
-	surf_life = fonts[16].render("Leben: " + str(ship.lives), True, (255, 255, 255))
-	surface.blit(surf_life, (10, 10))
+	if not status:
 
-	surf_life = fonts[16].render("Alife: " + str(ship.alife), True, (255, 255, 255))
-	surface.blit(surf_life, (10, 50))
+		ship.draw(surface)
 
-	surf_timeout = fonts[16].render("Timeout: " + str(remove_timeout), True, (255, 255, 255))
-	surface.blit(surf_timeout, (10, 30))
+		surf_fps = fonts[16].render("FPS: " + str(round(clock.get_fps(), 1)), True, (255, 255, 255))
+		surface.blit(surf_fps, (screen_size[0] - surf_fps.get_width() - 10, screen_size[1] - 20))
 
-	surf_count = fonts[16].render("Anzahl: " + str(len(asteroids)), True, (255, 255, 255))
-	surface.blit(surf_count, (screen_size[0] - surf_count.get_width() - 10, screen_size[1] - 40))
+		surf_score = fonts[16].render("Score: " + str(ship.score), True, (255, 255, 255))
+		surface.blit(surf_score, (screen_size[0] - surf_score.get_width() - 10, 10))
+
+		surf_life = fonts[16].render("Leben: " + str(ship.lives), True, (255, 255, 255))
+		surface.blit(surf_life, (10, 10))
+
+		surf_count = fonts[16].render("Anzahl: " + str(len(asteroids)), True, (255, 255, 255))
+		surface.blit(surf_count, (screen_size[0] - surf_count.get_width() - 10, screen_size[1] - 40))
+		
+		surface.blit(fonts[16].render((str(ammo)), True, (255, 255, 255)), (100,10))
+		surface.blit(fonts[16].render((str(ammorefill)), True, (255, 255, 255)), (100,10))
+
+	else:
+
+		if (opacity < 255):
+			opacity += 5
+
+		if (status == 1):
+		
+			surf_gameover = fonts[32].render("Gameover!", True, (opacity/1.5, opacity/1.5, opacity/1.5))
+			surface.blit(surf_gameover, (screen_size[0]/2 - surf_gameover.get_width()/2, screen_size[1]/2 - surf_gameover.get_height()/2))
+
+		else: 
+
+			surf_score = fonts[32].render("Score: " + str(ship.score), True, (opacity/2, opacity/2, opacity))
+			surface.blit(surf_score, (screen_size[0]/2 - surf_score.get_width()/2, 60))
+
+			surf_score = fonts[32].render("Highscore: " + str(ship.score), True, (opacity/2, opacity/2, opacity))
+			surface.blit(surf_score, (screen_size[0]/2 - surf_score.get_width()/2, 90))
+
+			surf_gameover = fonts[32].render("Press Space to restart", True, (opacity/1.5, opacity/1.5, opacity/1.5))
+			surface.blit(surf_gameover, (screen_size[0]/2 - surf_gameover.get_width()/2, screen_size[1]/2 - surf_gameover.get_height()/2))
+
 	screen.blit(surface, (0, 0))
-
 	pygame.display.flip()
-
 
 def main():
 	global clock
