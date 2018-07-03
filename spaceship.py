@@ -15,12 +15,13 @@ class Spaceship:
 		self.lives = 3
 		self.alive = True
 		self.dying = 0
+		self.invincible = 3
 
 		self.position = list(position)
 		self.velocity = [1.0, 0.0]
 		self.angle = 180.0
 		
-		self.fire_timeout = 4
+		self.fire_timeout = 6
 		self.reload_timeout = 50
 		self.reload_amount = 50
 
@@ -78,7 +79,7 @@ class Spaceship:
 					asteroid2.collide_timeout(idx1)
 
 	def collide_ship(self, screen_size, asteroids):
-		if self.dying <= 0:
+		if self.dying <= 0 and not self.invincible > 0:
 			for asteroid in asteroids:
 				if (abs(round(asteroid.position[0]) - round(self.position[0]))) <= asteroid.scale * asteroid.radius and \
 					(abs(round(asteroid.position[1]) - round(self.position[1]))) <= asteroid.scale * asteroid.radius:
@@ -111,6 +112,10 @@ class Spaceship:
 			self.dying -= dt
 			if self.dying <= 0:
 				self.alive = True
+				self.invincible = 2
+
+		if self.invincible > 0:
+			self.invincible -= dt
 
 		if self.fire_to > 0:
 			self.fire_to -= 1
@@ -142,4 +147,5 @@ class Spaceship:
 			b.draw(surface)
 
 		if self.alive:
-			pygame.draw.aalines(surface, self.color, True, self.real_points)
+			if not self.invincible  % 0.1 < 0.03:
+				pygame.draw.aalines(surface, self.color, True, self.real_points)
