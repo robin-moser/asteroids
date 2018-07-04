@@ -119,11 +119,11 @@ def updatestatus(st):
 
 
 def update(dt):
-	global asteroid_count, ship, remove_timeout
+	global asteroid_count, ship, remove_timeout, highscore
 
 	ship.update(dt, screen_size)
 	ship.collide_bullets(asteroids, dt)
-	ship.collide_asteroids(asteroids)
+	#ship.collide_asteroids(asteroids)
 	ship.collide_ship(screen_size, asteroids)
 
 	asteroid_realcount = round(asteroid_count + ship.score / 2000)
@@ -133,6 +133,9 @@ def update(dt):
 
 	for obj in asteroids:
 		obj.update(dt, screen_size)
+
+	if ship.score > highscore:
+		highscore = ship.score
 
 	if ship.lives == 0:
 		if not status:
@@ -149,7 +152,7 @@ def update(dt):
 
 
 def draw():
-	global opacity, status
+	global opacity, status, highscore
 	surface.fill((0, 0, 0))
 	
 	for astro in asteroids:
@@ -173,6 +176,9 @@ def draw():
 
 		surf_score = fonts[16].render("Score: " + str(ship.score), True, (255, 255, 255))
 		surface.blit(surf_score, (screen_size[0] - surf_score.get_width() - 10, 10))
+
+		surf_highscore = fonts[16].render("Highscore: " + str(highscore), True, (255, 255, 255))
+		surface.blit(surf_highscore, (screen_size[0] - surf_highscore.get_width() - 10, 30))
 
 		surf_life = fonts[16].render("Leben: " + str(ship.lives), True, (255, 255, 255))
 		surface.blit(surf_life, (10, 10))
@@ -198,8 +204,8 @@ def draw():
 			surf_score = fonts[32].render("Score: " + str(ship.score), True, (opacity/2, opacity/2, opacity))
 			surface.blit(surf_score, (screen_size[0]/2 - surf_score.get_width()/2, 60))
 
-			surf_score = fonts[32].render("Highscore: " + str(ship.score), True, (opacity/2, opacity/2, opacity))
-			surface.blit(surf_score, (screen_size[0]/2 - surf_score.get_width()/2, 90))
+			surf_highscore = fonts[32].render("Highscore: " + str(highscore), True, (opacity/2, opacity/2, opacity))
+			surface.blit(surf_highscore, (screen_size[0]/2 - surf_highscore.get_width()/2, 90))
 
 			surf_gameover = fonts[32].render("Press Space to restart", True, (opacity/1.5, opacity/1.5, opacity/1.5))
 			surface.blit(surf_gameover, (screen_size[0]/2 - surf_gameover.get_width()/2, screen_size[1]/2 - surf_gameover.get_height()/2))
@@ -209,6 +215,8 @@ def draw():
 
 def main():
 	global clock
+
+	load_highscore()
 
 	target_fps = 60
 	dt = 1.0 / float(target_fps)
@@ -224,7 +232,7 @@ def main():
 		draw()
 		clock.tick(target_fps)
 	pygame.quit()
-
+	write_highscore()
 
 if __name__ == "__main__":
 	try:
