@@ -87,17 +87,17 @@ def get_input(dt):
 			if event.key == K_ESCAPE:
 				return False
 	if not status:
-		if keys_pressed[K_LEFT]:
+		if keys_pressed[K_LEFT] or keys_pressed[K_a]:
 			ship.angle += 3.5
 
-		if keys_pressed[K_RIGHT]:
+		if keys_pressed[K_RIGHT] or keys_pressed[K_d]:
 			ship.angle -= 3.5
 
-		if keys_pressed[K_UP]:
+		if keys_pressed[K_UP]  or keys_pressed[K_w]:
 			ship.velocity[0] += dt * spaceship.Spaceship.speed * sin(radians(ship.angle))
 			ship.velocity[1] += dt * spaceship.Spaceship.speed * cos(radians(ship.angle))
 
-		if keys_pressed[K_DOWN]:
+		if keys_pressed[K_DOWN] or keys_pressed[K_s]:
 			ship.velocity[0] *= 0.99
 			ship.velocity[1] *= 0.99
 
