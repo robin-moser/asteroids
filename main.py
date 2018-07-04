@@ -44,19 +44,39 @@ def start_game():
 	asteroids = []
 	add_asteroid(asteroid_count)
 
+def load_highscore():
+	global highscore
+	try:
+		f = open("highscore.txt","rb")
+		highscore = int(f.read())
+		f.close()
+	except:
+		highscore = 0
+
+def write_highscore():
+	f = open("highscore.txt","wb")
+	f.write(str(highscore).encode())
+	f.close()
+
 def add_asteroid(n=1):
 	for i in range(n):
 
+		speed = 10 + ship.score / 1000
+		ship_radius = 150
+
 		pos1 = random.randint(0, screen_size[0])
 		pos2 = random.randint(0, screen_size[1])
-		while abs(pos1 - ship.position[0]) < 200 and abs(pos2 - ship.position[0]) < 200:
+
+		while abs(pos1 - ship.position[0]) < ship_radius \
+		and abs(pos2 - ship.position[1]) < ship_radius:
+
 			pos1 = random.randint(0, screen_size[0])
 			pos2 = random.randint(0, screen_size[1])
 
 		asteroids.append(asteroid.Asteroid([
 			pos1,
 			pos2
-		]))
+		],speed))
 
 def get_input(dt):
 	keys_pressed = pygame.key.get_pressed()

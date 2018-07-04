@@ -5,12 +5,12 @@ from math import *
 
 
 class Asteroid:
-	speed = 10.0
 
-	def __init__(self, position):
+	def __init__(self, position, speed):
 
 		self.health = 5
 		self.radius = 20
+		self.speed = speed
 
 		self.timeout = 0
 		self.color = (255, 255, 255)
@@ -22,8 +22,8 @@ class Asteroid:
 		self.angle = random.uniform(0.0, 360.0)
 		self.scale = random.uniform(1.0, 1.5)
 		self.velocity = [
-			Asteroid.speed * random.uniform(-2.0, 2.0),
-			Asteroid.speed * random.uniform(-2.0, 2.0)
+			self.speed * random.uniform(-2.0, 2.0),
+			self.speed * random.uniform(-2.0, 2.0)
 		]
 
 		self.rel_points = [
